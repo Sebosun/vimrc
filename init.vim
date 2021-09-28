@@ -138,11 +138,12 @@ let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
 " CoC Extensions
 
 let g:coc_global_extensions = [
-  \  'coc-snippets',
-  \  'coc-pairs',
   \  'coc-tsserver',
   \  'coc-prettier',
   \  'coc-eslint',
+  \  'coc-snippets',
+  \  'coc-pairs',
+  \  'coc-emmets',
   \  'coc-json',
   \  'coc-css',
   \  ]
