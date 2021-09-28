@@ -130,6 +130,11 @@ map <C-j> <C-w>j
         let NERDTreeBookmarksFile = '~/.vim' . '/NERDTreeBookmarks'
     endif
 
+" markdown as default vimwiki filetype
+let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+map <leader>v :VimwikiIndex
+let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]j
+
 " CoC Extensions
 
 let g:coc_global_extensions = [
