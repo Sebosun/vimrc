@@ -16,8 +16,6 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
-" Plug 'leafgarland/typescript-vim'
-" Plug 'mlaursen/vim-react-snippets'
 
 Plug 'tpope/vim-commentary'
 
@@ -143,7 +141,7 @@ let g:coc_global_extensions = [
   \  'coc-eslint',
   \  'coc-snippets',
   \  'coc-pairs',
-  \  'coc-emmets',
+  \  'coc-emmet',
   \  'coc-json',
   \  'coc-css',
   \  ]
