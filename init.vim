@@ -1,3 +1,4 @@
+
 let mapleader =","
 
 call plug#begin()
@@ -25,6 +26,9 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate' }
+Plug 'nvim-treesitter/playground'
 
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -58,6 +62,9 @@ set noshowcmd
 set number relativenumber
 set laststatus=2
 
+" Disables automatic code continuation
+set formatoptions-=cro
+
 " Splits open at the bottom and right, which is non-retarded, unlike vim defaults.
 set splitbelow splitright
 
@@ -66,8 +73,19 @@ set tabstop=2
 set shiftwidth=2
 set expandtab
 
+" ----------- REMAPS -----------
+
 " Replace all is aliased to S.
 nnoremap S :%s//g<Left><Left>
+" Making Y behave like rest of capital letters
+nnoremap Y y$ 
+" Centering after moving to next/prev items
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap J mzJ`z
+
+"sourcing init.vim aliased
+:command Restart source ~/.config/nvim/init.vim 
 
 
 " Ignore case when searching
@@ -118,7 +136,7 @@ map <C-k> <C-w>k
 map <C-l> <C-w>l
 map <C-j> <C-w>j
 
-" Nerd tree
+" ----------- NERDTree -----------
 	map <leader>n :NERDTreeToggle<CR>
  	map <leader>r :NERDTreeFind<cr>
 	autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -131,17 +149,16 @@ map <C-j> <C-w>j
 " markdown as default vimwiki filetype
 let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
 map <leader>v :VimwikiIndex
-let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]j
+let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
 
-" CoC Extensions
-
+" ----------- CoC -----------
 let g:coc_global_extensions = [
+  \  'coc-snippets',
+  \  'coc-emmet',
+  \  'coc-pairs',
   \  'coc-tsserver',
   \  'coc-prettier',
   \  'coc-eslint',
-  \  'coc-snippets',
-  \  'coc-pairs',
-  \  'coc-emmet',
   \  'coc-json',
   \  'coc-css',
   \  ]
@@ -287,7 +304,7 @@ filetype plugin on
 set omnifunc=syntaxcomplete#Complete
 
 
-" Telescope settings
+" ----------- TELESCOPE -----------
 lua << EOF
 require('telescope').setup {
   extensions = {
@@ -322,21 +339,33 @@ nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
-" Function for toggling the bottom statusbar:
-let s:hidden_all = 1
-function! ToggleHiddenAll()
-    if s:hidden_all  == 0
-        let s:hidden_all = 1
-        set noshowmode
-        set noruler
-        set laststatus=0
-        set noshowcmd
-    else
-        let s:hidden_all = 0
-        set showmode
-        set ruler
-        set laststatus=2
-        set showcmd
-    endif
-endfunction
-nnoremap <leader>h :call ToggleHiddenAll()<CR>
+let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+map <leader>v :VimwikiIndex
+let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
+
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    additional_vim_regex_highlighting = false,
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
+  }
+}
+EOF
