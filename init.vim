@@ -1,26 +1,35 @@
-
 let mapleader =","
 
 call plug#begin()
 
+" writing
 Plug 'vimwiki/vimwiki'   
+Plug 'junegunn/goyo.vim'
+
 Plug 'preservim/nerdtree'
 Plug 'ryanoasis/vim-devicons'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'windwp/nvim-ts-autotag'
 
 Plug 'neoclide/coc.nvim'
 Plug 'neoclide/coc-css'
+Plug 'iamcco/coc-tailwindcss',  {'do': 'yarn install --frozen-lockfile && yarn run build'}
 
+Plug 'mattn/emmet-vim'
 Plug 'pangloss/vim-javascript'   
 Plug 'maxmellon/vim-jsx-pretty' 
 Plug 'HerringtonDarkholme/yats.vim'
-Plug 'leafgarland/typescript-vim'
+
+
 Plug 'peitalin/vim-jsx-typescript'
+Plug 'leafgarland/typescript-vim'
+
+Plug 'SirVer/ultisnips'
+Plug 'mlaursen/vim-react-snippets'
 
 Plug 'tpope/vim-commentary'
-
-Plug 'sainnhe/sonokai'
+Plug 'tpope/vim-surround'
 
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
@@ -33,8 +42,11 @@ Plug 'nvim-treesitter/playground'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
-call plug#end()
+Plug 'sainnhe/sonokai'
+" Plug 'joshdick/onedark.vim'
+" Plug 'ayu-theme/ayu-vim'
 
+call plug#end()
 
 " Important!!
 if has('termguicolors')
@@ -44,8 +56,10 @@ endif
 let g:sonokai_enable_italic = 1
 let g:sonokai_disable_italic_comment = 1
 let g:sonokai_transparent_background = 1
-
 colorscheme sonokai
+
+" disable automatic comment
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " Yats 
 set re=0
@@ -161,10 +175,11 @@ let g:coc_global_extensions = [
   \  'coc-eslint',
   \  'coc-json',
   \  'coc-css',
+  \  'coc-tailwindcss',
+  \  'coc-svelte',
   \  ]
-
 " Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" NOTE: Use command ':verbose ima <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
@@ -276,6 +291,10 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
+" Headwind sort command
+inoremap <leader>t :CocCommand tailwindCSS.headwind.sortTailwindClasses
+
+
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
@@ -345,9 +364,13 @@ let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
 
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
+ensure_installed = "maintained",
   highlight = {
     enable = true,              -- false will disable the whole extension
     additional_vim_regex_highlighting = false,
+  },
+  autotag = {
+    enable = true
   },
   playground = {
     enable = true,
@@ -369,3 +392,7 @@ require'nvim-treesitter.configs'.setup {
   }
 }
 EOF
+autocmd VimLeavePre * :call coc#rpc#kill()
+autocmd VimLeave * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -'.g:coc_process_pid) | endif
+
+
