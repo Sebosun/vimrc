@@ -1,8 +1,17 @@
 let mapleader =","
 
-call plug#begin()
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-" writing
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+
+call plug#begin('~/.config/nvim/plugged')
 Plug 'vimwiki/vimwiki'   
 Plug 'junegunn/goyo.vim'
 
@@ -14,13 +23,11 @@ Plug 'windwp/nvim-ts-autotag'
 
 Plug 'neoclide/coc.nvim'
 Plug 'neoclide/coc-css'
-Plug 'iamcco/coc-tailwindcss',  {'do': 'yarn install --frozen-lockfile && yarn run build'}
 
 Plug 'mattn/emmet-vim'
 Plug 'pangloss/vim-javascript'   
 Plug 'maxmellon/vim-jsx-pretty' 
 Plug 'HerringtonDarkholme/yats.vim'
-
 
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'leafgarland/typescript-vim'
@@ -43,8 +50,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 Plug 'sainnhe/sonokai'
-" Plug 'joshdick/onedark.vim'
-" Plug 'ayu-theme/ayu-vim'
+
 
 call plug#end()
 
@@ -52,7 +58,6 @@ call plug#end()
 if has('termguicolors')
   set termguicolors
 endif
-
 let g:sonokai_enable_italic = 1
 let g:sonokai_disable_italic_comment = 1
 let g:sonokai_transparent_background = 1
@@ -176,7 +181,6 @@ let g:coc_global_extensions = [
   \  'coc-json',
   \  'coc-css',
   \  'coc-tailwindcss',
-  \  'coc-svelte',
   \  ]
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose ima <tab>' to make sure tab is not mapped by
@@ -204,8 +208,8 @@ endif
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+" Use `[g` and `]g` to navigte diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of urrent buffer in location list.
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
@@ -292,7 +296,7 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
 " Headwind sort command
-inoremap <leader>t :CocCommand tailwindCSS.headwind.sortTailwindClasses
+noremap <leader>t :CocCommand tailwindCSS.headwind.sortTailwindClasses
 
 
 " Add (Neo)Vim's native statusline support.
@@ -326,6 +330,7 @@ set omnifunc=syntaxcomplete#Complete
 " ----------- TELESCOPE -----------
 lua << EOF
 require('telescope').setup {
+  defaults ={ file_ignore_patterns = {"node_modules"}},
   extensions = {
     fzf = {
       fuzzy = true,                    -- false will only do exact matching
@@ -394,5 +399,4 @@ ensure_installed = "maintained",
 EOF
 autocmd VimLeavePre * :call coc#rpc#kill()
 autocmd VimLeave * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -'.g:coc_process_pid) | endif
-
 
